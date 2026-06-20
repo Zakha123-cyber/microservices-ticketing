@@ -4,7 +4,7 @@ function normalizeDate(value) {
   return typeof value === 'string' ? value.replace('T', ' ') : value;
 }
 
-async function findAll({ limit = 10, offset = 0, search, category_id, date_from, date_to }) {
+async function findAll({ limit = 10, offset = 0, search, category_id, date_from, date_to, created_by }) {
   const safeLimit = Math.max(1, Math.min(Number.parseInt(limit, 10) || 10, 100));
   const safeOffset = Math.max(0, Number.parseInt(offset, 10) || 0);
   const filters = [];
@@ -28,6 +28,11 @@ async function findAll({ limit = 10, offset = 0, search, category_id, date_from,
   if (date_to) {
     filters.push('DATE(e.date) <= ?');
     params.push(date_to);
+  }
+
+  if (created_by) {
+    filters.push('e.created_by = ?');
+    params.push(Number(created_by));
   }
 
   const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';

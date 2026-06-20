@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Middleware\AuthCheckMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('events.index'));
+Route::get('/', LandingPageController::class)->name('landing');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -30,4 +32,10 @@ Route::middleware(AuthCheckMiddleware::class)->group(function () {
     Route::post('/bookings/update-payment', [BookingController::class, 'updatePayment'])->name('bookings.update-payment');
     Route::get('/dashboard', [DashboardController::class, 'userDashboard'])->name('dashboard.user');
     Route::get('/admin', [DashboardController::class, 'adminDashboard'])->name('dashboard.admin');
+    Route::get('/admin/verify', function () {
+        return view('admin.verify');
+    })->name('admin.verify');
+    Route::get('/admin/events', [AdminController::class, 'eventManagement'])->name('admin.events');
+    Route::get('/admin/tickets', [AdminController::class, 'ticketManagement'])->name('admin.tickets');
+    Route::get('/admin/transactions', [AdminController::class, 'transactionManagement'])->name('admin.transactions');
 });

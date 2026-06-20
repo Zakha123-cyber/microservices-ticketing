@@ -10,11 +10,21 @@
     @endif
 </section>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <form class="filter" method="GET" action="{{ route('events.index') }}">
-    <input name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search events">
-    <input name="date_from" type="date" value="{{ $filters['date_from'] ?? '' }}">
-    <input name="date_to" type="date" value="{{ $filters['date_to'] ?? '' }}">
-    <button type="submit">Filter</button>
+    <div class="search-group">
+        <input name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search events" class="search-input">
+    </div>
+    <div class="date-range-group">
+        <span class="date-label">From</span>
+        <input name="date_from" id="date_from" value="{{ $filters['date_from'] ?? '' }}" placeholder="Start date" data-input>
+        <span class="date-label">To</span>
+        <input name="date_to" id="date_to" value="{{ $filters['date_to'] ?? '' }}" placeholder="End date" data-input>
+    </div>
+    <button type="submit" class="btn">Filter</button>
     <a class="btn btn-muted" href="{{ route('events.index') }}">Reset</a>
 </form>
 
@@ -47,4 +57,21 @@
         @endforeach
     </div>
 @endif
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    flatpickr("#date_from", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d M Y",
+        allowInput: true,
+    });
+    flatpickr("#date_to", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d M Y",
+        allowInput: true,
+    });
+});
+</script>
 @endsection

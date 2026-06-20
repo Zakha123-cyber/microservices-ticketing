@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../utils/response');
 
-const publicPrefixes = ['/api/auth/register', '/api/auth/login'];
+const publicPrefixes = ['/api/auth/register', '/api/auth/login', '/api/bookings/midtrans-notification', '/api/events'];
 
 function jwtValidation(req, res, next) {
   if (publicPrefixes.some((prefix) => req.path.startsWith(prefix))) {

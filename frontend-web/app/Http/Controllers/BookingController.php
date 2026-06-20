@@ -12,6 +12,20 @@ class BookingController extends Controller
         $booking = $bookings->find($id, session('token'));
         $data = $booking['data'] ?? [];
 
+        // Jika status di DB masih pending, tapi ada query parameters dari Midtrans, update via server-side
+        if (($data['status'] ?? 'pending') === 'pending' && $request->has('transaction_status')) {
+            $updateResponse = $bookings->updatePayment($id, [
+                'transaction_status' => $request->query('transaction_status'),
+                'transaction_id' => $request->query('transaction_id'),
+            ], session('token'));
+
+            if ($updateResponse['success'] ?? false) {
+                // Refresh data booking
+                $booking = $bookings->find($id, session('token'));
+                $data = $booking['data'] ?? [];
+            }
+        }
+
         return view('bookings.payment-finish', [
             'booking' => $data,
             'bookingId' => $id,

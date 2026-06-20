@@ -22,7 +22,12 @@ class AuthController extends Controller
         $response = $auth->login($request->only('email', 'password'));
         if (!($response['success'] ?? false)) return back()->withErrors(['email' => $response['message'] ?? 'Login failed']);
 
-        session(['token' => $response['data']['token'], 'user' => $response['data']['user']]);
+        $user = $response['data']['user'];
+        session(['token' => $response['data']['token'], 'user' => $user]);
+
+        if (($user['role'] ?? '') === 'admin') {
+            return redirect()->route('dashboard.admin');
+        }
         return redirect()->route('events.index');
     }
 
@@ -32,7 +37,12 @@ class AuthController extends Controller
         $response = $auth->register($payload);
         if (!($response['success'] ?? false)) return back()->withErrors(['email' => $response['message'] ?? 'Register failed']);
 
-        session(['token' => $response['data']['token'], 'user' => $response['data']['user']]);
+        $user = $response['data']['user'];
+        session(['token' => $response['data']['token'], 'user' => $user]);
+
+        if (($user['role'] ?? '') === 'admin') {
+            return redirect()->route('dashboard.admin');
+        }
         return redirect()->route('events.index');
     }
 

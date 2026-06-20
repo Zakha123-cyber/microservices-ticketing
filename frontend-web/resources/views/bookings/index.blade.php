@@ -34,7 +34,7 @@
                     <td>{{ $booking['event_title'] }}</td>
                     <td>{{ $booking['quantity'] }}</td>
                     <td>Rp {{ number_format($booking['total_price'], 0, ',', '.') }}</td>
-                    <td>{{ $booking['status'] }}</td>
+                    <td><span class="status-badge status-{{ $booking['status'] }}">{{ $booking['status'] }}</span></td>
                     <td><a class="btn btn-muted" href="{{ route('bookings.show', $booking['id']) }}">Detail</a></td>
                 </tr>
             @endforeach
