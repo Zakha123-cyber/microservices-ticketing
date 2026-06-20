@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/bookings/health', fn () => response()->json(['success' => true, 'service' => 'booking-service']));
 Route::post('/bookings/midtrans-notification', [BookingController::class, 'midtransNotification']);
+Route::get('/bookings/{booking}/simulate-payment', [BookingController::class, 'simulatePayment']);
+Route::post('/bookings/{booking}/payment-callback', [BookingController::class, 'paymentCallback']);
 
 Route::middleware(AuthMiddleware::class)->group(function () {
     Route::post('/bookings', [BookingController::class, 'store']);

@@ -1,6 +1,12 @@
 const pool = require('../config/database');
 
+function normalizeDate(value) {
+  return typeof value === 'string' ? value.replace('T', ' ') : value;
+}
+
 async function findAll({ limit = 10, offset = 0, search, category_id, date_from, date_to }) {
+  const safeLimit = Math.max(1, Math.min(Number.parseInt(limit, 10) || 10, 100));
+  const safeOffset = Math.max(0, Number.parseInt(offset, 10) || 0);
   const filters = [];
   const params = [];
 
@@ -26,8 +32,8 @@ async function findAll({ limit = 10, offset = 0, search, category_id, date_from,
 
   const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
   const [rows] = await pool.execute(
-    `SELECT e.*, c.name AS category_name FROM events e JOIN categories c ON c.id = e.category_id ${where} ORDER BY e.date ASC LIMIT ? OFFSET ?`,
-    [...params, Number(limit), Number(offset)],
+    `SELECT e.*, c.name AS category_name FROM events e JOIN categories c ON c.id = e.category_id ${where} ORDER BY e.date ASC LIMIT ${safeLimit} OFFSET ${safeOffset}`,
+    params,
   );
 
   const [countRows] = await pool.execute(`SELECT COUNT(*) AS total FROM events e ${where}`, params);
@@ -46,7 +52,7 @@ async function createEvent(data) {
   const [result] = await pool.execute(
     `INSERT INTO events (category_id, title, description, image_path, date, location, price, quota, available_tickets, created_by)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [data.category_id, data.title, data.description, data.image_path, data.date, data.location, data.price, data.quota, data.quota, data.created_by],
+    [data.category_id, data.title, data.description, data.image_path, normalizeDate(data.date), data.location, data.price, data.quota, data.quota, data.created_by],
   );
   return findById(result.insertId);
 }
@@ -66,7 +72,7 @@ async function updateEvent(id, data) {
       data.title ?? current.title,
       data.description ?? current.description,
       data.image_path ?? current.image_path,
-      data.date ?? current.date,
+      normalizeDate(data.date ?? current.date),
       data.location ?? current.location,
       data.price ?? current.price,
       nextQuota,

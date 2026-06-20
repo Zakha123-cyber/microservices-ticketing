@@ -18,10 +18,21 @@ class MidtransService
 
     public function createPayment(Booking $booking): string
     {
+        if (blank(config('services.midtrans.server_key')) || str_contains((string) config('services.midtrans.server_key'), 'your_midtrans')) {
+            return url('/api/bookings/' . $booking->id . '/simulate-payment');
+        }
+
+        $finishUrl = config('services.midtrans.finish_redirect_url')
+            ? config('services.midtrans.finish_redirect_url') . '/' . $booking->id
+            : url('/api/bookings/' . $booking->id . '/simulate-payment');
+
         return Snap::createTransaction([
             'transaction_details' => [
                 'order_id' => $booking->midtrans_order_id,
                 'gross_amount' => (int) $booking->total_price,
+            ],
+            'callbacks' => [
+                'finish' => $finishUrl,
             ],
             'item_details' => [[
                 'id' => (string) $booking->event_id,

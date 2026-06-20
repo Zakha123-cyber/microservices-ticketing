@@ -1,4 +1,4 @@
 const services = require('../config/services');
 const { forwardRequest } = require('../utils/httpClient');
 
-module.exports = forwardRequest(services.auth);
+module.exports = forwardRequest(services.auth, '/api/auth');

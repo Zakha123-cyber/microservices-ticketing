@@ -11,11 +11,21 @@ function fixRequestBody(proxyReq, req) {
   proxyReq.write(bodyData);
 }
 
-function forwardRequest(target) {
+function forwardRequest(target, servicePrefix) {
   return createProxyMiddleware({
     target,
     changeOrigin: true,
+    pathRewrite: (path, req) => `${servicePrefix}${req.url}`,
+    timeout: 15000,
+    proxyTimeout: 15000,
     on: { proxyReq: fixRequestBody },
+    onError(error, req, res) {
+      res.status(502).json({
+        success: false,
+        message: `Failed to proxy request to ${target}`,
+        error: error.message,
+      });
+    },
   });
 }
 
