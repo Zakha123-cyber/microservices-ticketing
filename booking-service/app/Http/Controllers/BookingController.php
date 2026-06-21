@@ -194,6 +194,47 @@ class BookingController extends Controller
         return response()->json(['success' => true, 'message' => 'Notification processed']);
     }
 
+    public function verify(Request $request)
+    {
+        if ($request->attributes->get('user_role') !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Admin role is required'], 403);
+        }
+
+        $validated = $request->validate([
+            'booking_code' => ['required', 'string'],
+        ]);
+
+        $booking = Booking::where('booking_code', $validated['booking_code'])->first();
+
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
+        }
+
+        if ($booking->status !== 'paid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket status is "' . $booking->status . '". Only paid tickets can be verified.',
+                'data' => $booking,
+            ], 400);
+        }
+
+        if ($booking->used_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket already used at ' . $booking->used_at->format('d M Y H:i'),
+                'data' => $booking,
+            ], 400);
+        }
+
+        $booking->update(['used_at' => now()]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket verified successfully',
+            'data' => $booking->fresh(),
+        ]);
+    }
+
     public function paymentCallback(Request $request, Booking $booking, EventServiceClient $events)
     {
         if ($booking->status === 'paid') {

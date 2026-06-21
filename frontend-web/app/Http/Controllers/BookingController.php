@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\BookingServiceClient;
+use App\Services\EventServiceClient;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -68,7 +69,19 @@ class BookingController extends Controller
 
     public function show(int $id)
     {
-        return view('bookings.show', ['booking' => app(BookingServiceClient::class)->find($id, session('token'))]);
+        $booking = app(BookingServiceClient::class)->find($id, session('token'));
+        $bookingData = $booking['data'] ?? [];
+        $eventId = $bookingData['event_id'] ?? null;
+
+        $event = [];
+        if ($eventId) {
+            $event = app(EventServiceClient::class)->find($eventId, session('token'));
+        }
+
+        return view('bookings.show', [
+            'booking' => $booking,
+            'event' => $event['data'] ?? [],
+        ]);
     }
 
     public function store(Request $request, BookingServiceClient $bookings)

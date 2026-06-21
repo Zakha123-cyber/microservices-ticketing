@@ -28,4 +28,9 @@ class BookingServiceClient extends ApiClient
     {
         return $this->get('/bookings/admin/all', $query, $token);
     }
+
+    public function verifyTicket(string $bookingCode, ?string $token = null): array
+    {
+        return $this->post('/bookings/verify', ['booking_code' => $bookingCode], $token);
+    }
 }

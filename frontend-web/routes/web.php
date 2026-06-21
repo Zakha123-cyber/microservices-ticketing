@@ -32,9 +32,8 @@ Route::middleware(AuthCheckMiddleware::class)->group(function () {
     Route::post('/bookings/update-payment', [BookingController::class, 'updatePayment'])->name('bookings.update-payment');
     Route::get('/dashboard', [DashboardController::class, 'userDashboard'])->name('dashboard.user');
     Route::get('/admin', [DashboardController::class, 'adminDashboard'])->name('dashboard.admin');
-    Route::get('/admin/verify', function () {
-        return view('admin.verify');
-    })->name('admin.verify');
+    Route::get('/admin/verify', [AdminController::class, 'verifyPage'])->name('admin.verify');
+    Route::post('/admin/verify', [AdminController::class, 'verifyTicket'])->name('admin.verify.post');
     Route::get('/admin/events', [AdminController::class, 'eventManagement'])->name('admin.events');
     Route::get('/admin/tickets', [AdminController::class, 'ticketManagement'])->name('admin.tickets');
     Route::get('/admin/transactions', [AdminController::class, 'transactionManagement'])->name('admin.transactions');

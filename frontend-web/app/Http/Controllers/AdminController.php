@@ -165,4 +165,23 @@ class AdminController extends Controller
             'perEventLabels' => $perEventLabels,
         ]);
     }
+
+    public function verifyPage()
+    {
+        return view('admin.verify', ['result' => null, 'booking' => null]);
+    }
+
+    public function verifyTicket(Request $request, BookingServiceClient $bookings)
+    {
+        $validated = $request->validate([
+            'booking_code' => ['required', 'string'],
+        ]);
+
+        $response = $bookings->verifyTicket($validated['booking_code'], session('token'));
+
+        return view('admin.verify', [
+            'result' => $response,
+            'booking' => $response['data'] ?? null,
+        ]);
+    }
 }

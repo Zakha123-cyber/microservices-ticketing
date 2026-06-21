@@ -65,8 +65,9 @@ class DashboardController extends Controller
         $topEventIds = array_keys(array_slice($eventBookingCount, 0, 5));
         $topEvents = [];
         foreach ($eventsData as $e) {
-            if (in_array($e['id'], $topEventIds)) {
-                $e['booking_count'] = $eventBookingCount[$e['id']];
+            $eid = $e['id'] ?? 0;
+            if ($eid && isset($eventBookingCount[$eid])) {
+                $e['booking_count'] = $eventBookingCount[$eid];
                 $topEvents[] = $e;
             }
         }

@@ -15,4 +15,5 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/bookings/admin/all', [BookingController::class, 'all']);
     Route::get('/bookings/{booking}', [BookingController::class, 'show']);
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+    Route::post('/bookings/verify', [BookingController::class, 'verify']);
 });

@@ -18,5 +18,6 @@ class Booking extends Model
         'midtrans_order_id',
         'midtrans_transaction_id',
         'paid_at',
+        'used_at',
     ];
 }
