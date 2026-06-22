@@ -57,10 +57,10 @@
                     <div style="display:flex; gap:8px; margin-top:16px;">
                         <a class="btn btn-muted" href="{{ route('events.show', $event['id']) }}" style="flex:1; text-align:center;">View</a>
                         <a class="btn btn-muted" href="{{ route('events.edit', $event['id']) }}" style="flex:1; text-align:center;">Edit</a>
-                        <form method="POST" action="{{ route('events.destroy', $event['id']) }}" style="flex:1;" onsubmit="return confirm('Hapus event ini?')">
+                        <form method="POST" action="{{ route('events.destroy', $event['id']) }}" style="flex:1;" class="delete-form">
                             @csrf
                             @method('DELETE')
-                            <button class="btn" style="width:100%; background:var(--text-negative); color:#fff;">Delete</button>
+                            <button class="btn delete-btn" style="width:100%; background:var(--text-negative); color:#fff;" type="button">Delete</button>
                         </form>
                     </div>
                 </div>
@@ -69,3 +69,29 @@
     </div>
 @endif
 @endsection
+
+@push('scripts')
+<script>
+document.querySelectorAll('.delete-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        var form = this.closest('.delete-form');
+        Swal.fire({
+            title: 'Hapus event?',
+            text: 'Data tidak bisa dikembalikan setelah dihapus.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e91429',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+            background: '#181818',
+            color: '#fff'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush

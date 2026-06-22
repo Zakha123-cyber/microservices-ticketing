@@ -188,12 +188,38 @@
     @if(data_get(session('user'), 'role') === 'admin')
         <div style="margin-top:24px; display:flex; gap:10px; flex-wrap:wrap;">
             <a class="btn btn-muted" href="{{ route('events.edit', $item['id']) }}">Edit Event</a>
-            <form method="POST" action="{{ route('events.destroy', $item['id']) }}" onsubmit="return confirm('Delete this event?')">
+            <form method="POST" action="{{ route('events.destroy', $item['id']) }}" class="delete-form">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn" style="background:var(--text-negative); color:#fff;">Delete Event</button>
+                <button type="button" class="btn delete-btn" style="background:var(--text-negative); color:#fff;">Delete Event</button>
             </form>
         </div>
     @endif
 @endif
 @endsection
+
+@push('scripts')
+<script>
+document.querySelectorAll('.delete-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        var form = this.closest('.delete-form');
+        Swal.fire({
+            title: 'Hapus event?',
+            text: 'Data tidak bisa dikembalikan setelah dihapus.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e91429',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+            background: '#181818',
+            color: '#fff'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush

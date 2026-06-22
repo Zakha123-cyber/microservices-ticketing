@@ -30,7 +30,8 @@ class EventController extends Controller
         $response = $events->create($payload, session('token'));
         if (!($response['success'] ?? false)) return $this->backWithApiErrors($response, 'Create event failed');
 
-        return redirect()->route('events.index')->with('status', 'Event created successfully');
+        $redirect = data_get(session('user'), 'role') === 'admin' ? 'admin.events' : 'events.index';
+        return redirect()->route($redirect)->with('status', 'Event created successfully');
     }
 
     public function edit(int $id, EventServiceClient $events)
@@ -46,7 +47,8 @@ class EventController extends Controller
         $response = $events->update($id, $payload, session('token'));
         if (!($response['success'] ?? false)) return $this->backWithApiErrors($response, 'Update event failed');
 
-        return redirect()->route('events.show', $id)->with('status', 'Event updated successfully');
+        $redirect = data_get(session('user'), 'role') === 'admin' ? 'admin.events' : 'events.show';
+        return redirect()->route($redirect, $redirect === 'admin.events' ? [] : $id)->with('status', 'Event updated successfully');
     }
 
     public function destroy(int $id, EventServiceClient $events)
@@ -54,7 +56,8 @@ class EventController extends Controller
         $response = $events->deleteEvent($id, session('token'));
         if (!($response['success'] ?? false)) return back()->withErrors(['event' => $response['message'] ?? 'Delete event failed']);
 
-        return redirect()->route('events.index')->with('status', 'Event deleted successfully');
+        $redirect = data_get(session('user'), 'role') === 'admin' ? 'admin.events' : 'events.index';
+        return redirect()->route($redirect)->with('status', 'Event deleted successfully');
     }
 
     private function validatedPayload(Request $request): array

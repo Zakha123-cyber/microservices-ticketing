@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Event Ticketing</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="app-container">
@@ -57,5 +58,16 @@
             @yield('content')
         </main>
     </div>
+@stack('scripts')
+@if(session('status'))
+<script>
+Swal.fire({ icon:'success', title:'Berhasil!', text:@json(session('status')), timer:3000, timerProgressBar:true, showConfirmButton:false, background:'#181818', color:'#fff', toast:true, position:'top-end' });
+</script>
+@endif
+@if($errors->any())
+<script>
+Swal.fire({ icon:'error', title:'Gagal!', text:@json($errors->first()), timer:4000, timerProgressBar:true, showConfirmButton:false, background:'#181818', color:'#fff', toast:true, position:'top-end' });
+</script>
+@endif
 </body>
 </html>
